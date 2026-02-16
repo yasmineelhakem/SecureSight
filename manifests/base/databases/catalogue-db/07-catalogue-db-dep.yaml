@@ -16,25 +16,32 @@ spec:
       labels:
         name: catalogue-db
     spec:
+
+      securityContext:
+        runAsUser: 1337
+        runAsGroup: 1337
+        fsGroup: 2000
+
       containers:
         - name: catalogue-db
           image: quay.io/powercloud/sock-shop-catalogue-db:latest
           imagePullPolicy: IfNotPresent
 
-          envFrom:
-          - secretRef:
-              name: catalogue-db-secret
+          #envFrom:
+          #- secretRef:
+           #   name: catalogue-db-secret
 
           env:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mongodb-creds
-                  key: password
-            - name: MARIADB_USER
-              value: root
+                  name: catalogue-db-secret
+                  key: MARIADB_ROOT_PASSWORD
+            #- name: MARIADB_USER
+             # value: root
             - name: MARIADB_DATABASE
               value: socksdb
+
           ports:
             - name: mysql
               containerPort: 3306

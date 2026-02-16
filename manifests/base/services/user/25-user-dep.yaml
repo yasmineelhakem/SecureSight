@@ -48,10 +48,10 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: user-config
-                  key: MONGO_DBASE
+                  key: MONGO_DB
 
-          securityContext:
-            runAsNonRoot: true
+          #securityContext:
+            #runAsNonRoot: true
           livenessProbe:
             httpGet:
               path: /health

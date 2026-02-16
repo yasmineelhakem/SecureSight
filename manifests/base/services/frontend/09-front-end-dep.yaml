@@ -36,7 +36,7 @@ spec:
                 name: frontend-config
 
           securityContext:
-            runAsNonRoot: true
+            #runAsNonRoot: true
             capabilities:
               drop:
                 - all

@@ -8,4 +8,4 @@ metadata:
 data:
   MONGO_HOST: "user-db"
   MONGO_PORT: "27017"
-  DATABASE: "users"
+  MONGO_DB: "user"

@@ -12,4 +12,4 @@ resources:
   - databases/
   - services/
 
-  - 29-route-front-end.yaml
+  #- 29-route-front-end.yaml
