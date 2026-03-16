@@ -30,7 +30,7 @@ spec:
           ports:
             - containerPort: 8080
           command: [ "/opt/user" ]
-          args: [ "-port=8080" , "-mongo-host=user-db:27017" ]
+          args: [ "-port=8080" , "-database=mongodb","-mongo-host=user-db:27017" ]
 
           # Use configmap for env vars instead of hardcoding them in the deployment
           env:
