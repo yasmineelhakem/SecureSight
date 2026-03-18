@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: sock-shop
+
+commonLabels:
+  app: orders-db
+  app.kubernetes.io/name: orders-db
+  app.kubernetes.io/component: database
+  tier: database
+
+resources:
+  - statefulset.yaml
+  - 13-orders-db-temp-pvc.yaml
+  - 14-orders-db-svc.yaml

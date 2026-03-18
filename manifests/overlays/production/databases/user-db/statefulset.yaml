@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-db
+  labels:
+    name: user-db
+  namespace: sock-shop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: user-db
+  template:
+    metadata:
+      labels:
+        name: user-db
+    spec:
+      containers:
+        - name: user-db
+          image: quay.io/powercloud/sock-shop-user-db:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mongo
+              containerPort: 27017
+
+          # MongoDB authentication
+          envFrom:
+            - secretRef:
+                name: user-db-secret
+
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: users-db-temp-vol
+            - mountPath: /data/db-users
+              name: users-db-data
+      volumes:
+        - name: users-db-temp-vol
+          persistentVolumeClaim:
+            claimName: user-db-temp-pvc
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+        kubernetes.io/arch: amd64
+        
+  volumeClaimTemplates:
+    - metadata:
+        name: user-db-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: standard

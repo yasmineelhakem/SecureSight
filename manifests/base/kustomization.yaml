@@ -9,7 +9,5 @@ resources:
   
   - configmaps/
   - secrets/
-  - databases/
+  #- databases/
   - services/
-
-  #- 29-route-front-end.yaml

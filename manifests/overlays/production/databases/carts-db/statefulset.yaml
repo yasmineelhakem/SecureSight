@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: carts-db
+  namespace: sock-shop
+spec:
+  serviceName: carts-db   
+  replicas: 1
+  selector:
+    matchLabels:
+      name: carts-db
+  template:
+    metadata:
+      labels:
+        name: carts-db
+    spec:
+      containers:
+        - name: carts-db
+          image: quay.io/mongodb/mongodb:org-4.4-standalone-ubuntu2204
+          ports:
+            - containerPort: 27017
+              name: mongo
+
+          envFrom:
+            - secretRef:
+                name: carts-db-secret
+
+          securityContext:
+            readOnlyRootFilesystem: true
+
+          volumeMounts:
+            - name: carts-db-temp-vol
+              mountPath: /tmp # this for temporary data
+
+            - name: mongo-storage   # mount this pv for high-durability pv 
+              mountPath: /data/db
+
+      volumes:
+        - name: carts-db-temp-vol
+          persistentVolumeClaim:
+            claimName: carts-db-temp-pvc
+
+      nodeSelector:
+        node-role.kubernetes.io/worker: ""
+        kubernetes.io/arch: amd64
+
+  # this volumefor durable storage
+  volumeClaimTemplates: 
+    - metadata:
+        name: mongo-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: standard

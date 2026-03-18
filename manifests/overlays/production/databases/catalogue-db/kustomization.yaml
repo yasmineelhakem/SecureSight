@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: sock-shop
+
+commonLabels:
+  app: catalogue-db
+  app.kubernetes.io/name: catalogue-db
+  app.kubernetes.io/component: database
+  tier: database
+
+resources:
+  - statefulset.yaml
+  - 08-catalogue-db-svc.yaml
+

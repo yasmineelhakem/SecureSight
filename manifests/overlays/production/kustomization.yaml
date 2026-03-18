@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: sock-shop
+  namespace: sock-shop
+
+resources:
+  - ../../base
+
+  - ./databases/carts-db/
+  - ./databases/catalogue-db/
+  - ./databases/orders-db/
+  - ./databases/rabbitmq/
+  - ./databases/session-db/
+  - ./databases/user-db/
