@@ -33,7 +33,7 @@ spec:
             readOnlyRootFilesystem: false
           volumeMounts:
             - mountPath: /data
-              name: sesion-storage
+              name: session-storage
 
       nodeSelector:
         node-role.kubernetes.io/worker: ""

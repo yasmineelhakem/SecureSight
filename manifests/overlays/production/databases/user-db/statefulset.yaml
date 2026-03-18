@@ -42,10 +42,10 @@ spec:
       nodeSelector:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
-        
+
   volumeClaimTemplates:
     - metadata:
-        name: user-db-data
+        name: users-db-data
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:

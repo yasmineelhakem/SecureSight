@@ -34,7 +34,7 @@ spec:
             - mountPath: /tmp
               name: orders-db-temp-vol
             - mountPath: /data/db
-              name: orders-db-vol # the durable data volume
+              name: orders-db-data # the durable data volume
       volumes:
         - name: orders-db-temp-vol
           persistentVolumeClaim:
@@ -43,7 +43,7 @@ spec:
       nodeSelector:
         node-role.kubernetes.io/worker: ""
         kubernetes.io/arch: amd64
-        
+
   volumeClaimTemplates:
     - metadata:
         name: orders-db-data

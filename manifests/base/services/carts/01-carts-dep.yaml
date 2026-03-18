@@ -23,6 +23,8 @@ spec:
           envFrom:
           - configMapRef:
               name: carts-config
+          - secretRef:
+              name: carts-db-secret
 
           command: [ "/usr/bin/java" ]
           args: [ "-cp", "/opt/app.jar", "-Xms64m", "-Xmx128m", "-XX:+UseG1GC", "-Djava.security.egd=file:/dev/urandom", "-Dspring.zipkin.enabled=false", "-Dloader.path=/opt/lib", "org.springframework.boot.loader.PropertiesLauncher", "--port=8080" ]
