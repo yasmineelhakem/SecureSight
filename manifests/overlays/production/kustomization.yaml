@@ -13,3 +13,12 @@ resources:
   - ./databases/rabbitmq/
   - ./databases/session-db/
   - ./databases/user-db/
+
+  - ./hpa/frontend-hpa.yaml
+  - ./hpa/catalogue-hpa.yaml
+  - ./hpa/user-hpa.yaml
+  - ./hpa/carts-hpa.yaml
+  - ./hpa/orders-hpa.yaml
+  - ./hpa/payment-hpa.yaml
+  - ./hpa/shipping-hpa.yaml
+  - ./hpa/queue-master-hpa.yaml
