@@ -2,31 +2,25 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: frontend-role
+  name: catalogue-role
   namespace: sock-shop
 rules:
-# Can read only its own configmap
 - apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list"]
-  resourceNames: ["frontend-config"]  
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["catalogue-db-secret"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: catalogue-role
+  name: carts-role
   namespace: sock-shop
 rules:
 - apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list"]
-  resourceNames: ["catalogue-config"]
-
-- apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
-  resourceNames: ["catalogue-db-secret"]
+  resourceNames: ["carts-db-secret"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -37,30 +31,13 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["configmaps"]
-  verbs: ["get", "list"]
+  verbs: ["get","list"]
   resourceNames: ["user-config"]
 
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
-  resourceNames: ["user-db-secret"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: carts-role
-  namespace: sock-shop
-rules:
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list"]
-  resourceNames: ["carts-config"]
-
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get"]
-  resourceNames: ["carts-db-secret"]
+  resourceNames: ["session-db-secret"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -70,26 +47,9 @@ metadata:
   namespace: sock-shop
 rules:
 - apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list"]
-  resourceNames: ["orders-config"]
-
-- apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
-  resourceNames: ["orders-db-secret", "rabbitmq-secret"]
-
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: payment-role
-  namespace: sock-shop
-rules:
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get"]
-  resourceNames: ["payment-config"]
+  resourceNames: ["rabbitmq-secret"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -98,11 +58,6 @@ metadata:
   name: shipping-role
   namespace: sock-shop
 rules:
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get"]
-  resourceNames: ["shipping-config"]
-
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
@@ -115,11 +70,6 @@ metadata:
   name: queue-master-role
   namespace: sock-shop
 rules:
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get"]
-  resourceNames: ["queue-master-config"]
-
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
