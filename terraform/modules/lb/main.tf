@@ -1,4 +1,8 @@
+# Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb
+# https://registry.terraform.io/providers/-/aws/6.8.0/docs/resources/lb_target_group
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener
 # lb = alb
+
 resource "aws_lb" "main" {
   name               = "alb-${var.environment}"
   internal           = false         

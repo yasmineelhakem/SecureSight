@@ -1,3 +1,6 @@
+# Documentation: https://registry.terraform.io/providers/-/aws/6.6.0/docs/resources/iam_role
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment
+
 resource "aws_iam_role" "eks_cluster" {
   name = "eks-cluster-role-${var.environment}"
 

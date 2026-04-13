@@ -1,3 +1,5 @@
+# Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
+
 resource "aws_security_group" "lb" {
   name        = "sg-lb-${var.environment}"
   description = "Security group for Load Balancer"

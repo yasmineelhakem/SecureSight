@@ -1,3 +1,8 @@
+# Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
+# https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html
+# https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
+
 resource "aws_eks_cluster" "main" {
   name     = "eks-${var.environment}"
   version  = var.kubernetes_version
