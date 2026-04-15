@@ -24,10 +24,10 @@ spec:
           name: front-end
     ports:
     - protocol: TCP
-      port: 80
-  
+      port: 8080
+
   egress:
-  
+
   # allow to orders-db
   - to:
     - podSelector:
@@ -35,8 +35,8 @@ spec:
           name: orders-db
     ports:
     - protocol: TCP
-      port: 27017  
-  
+      port: 27017
+
   # allow to shipping service
   - to:
     - podSelector:
@@ -44,8 +44,8 @@ spec:
           name: shipping
     ports:
     - protocol: TCP
-      port: 80
-  
+      port: 8080
+
   # allow to payment service
   - to:
     - podSelector:
@@ -53,7 +53,7 @@ spec:
           name: payment
     ports:
     - protocol: TCP
-      port: 80
+      port: 8080
   
   # allow to RabbitMQ
   - to:

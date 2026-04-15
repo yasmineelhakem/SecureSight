@@ -23,7 +23,7 @@ spec:
           name: front-end
     ports:
     - protocol: TCP
-      port: 80
+      port: 8080
   
   egress:
   # Allow catalogue -> catalogue-db

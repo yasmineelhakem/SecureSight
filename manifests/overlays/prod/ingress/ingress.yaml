@@ -1,0 +1,79 @@
+# Documentation: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-alb.html
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: securesight-ingress
+  namespace: sock-shop
+spec:
+  # this matches the name of IngressClass.
+  ingressClassName: alb
+  rules:
+    - host: securesight.com
+      http:
+        paths:
+        # default frontend path
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front-end
+                port:
+                  number: 80
+
+          - path: /api/catalogue
+            pathType: Prefix
+            backend:
+              service:
+                name: catalogue
+                port:
+                  number: 80
+          
+          - path: /api/user
+            pathType: Prefix
+            backend:
+              service:
+                name: user
+                port:
+                  number: 80
+          
+          - path: /api/carts
+            pathType: Prefix
+            backend:
+              service:
+                name: carts
+                port:
+                  number: 80
+          
+          - path: /api/orders
+            pathType: Prefix
+            backend:
+              service:
+                name: orders
+                port:
+                  number: 80
+
+          - path: /api/payment
+            pathType: Prefix
+            backend:
+              service:
+                name: payment
+                port:
+                  number: 80
+      
+          - path: /api/shipping
+            pathType: Prefix
+            backend:
+              service:
+                name: shipping
+                port:
+                  number: 80
+          
+          - path: /api/queue-master
+            pathType: Prefix
+            backend:
+              service:
+                name: queue-master
+                port:
+                  number: 80

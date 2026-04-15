@@ -26,8 +26,8 @@ spec:
           name: catalogue
     ports:
     - protocol: TCP
-      port: 80
-  
+      port: 8080
+
   # Allow frontend -> user
   - to:
     - podSelector:
@@ -35,8 +35,8 @@ spec:
           name: user
     ports:
     - protocol: TCP
-      port: 80
-  
+      port: 8080
+
   # Allow frontend -> carts
   - to:
     - podSelector:
@@ -44,8 +44,8 @@ spec:
           name: carts
     ports:
     - protocol: TCP
-      port: 80
-  
+      port: 8080
+
   # frontend -> orders
   - to:
     - podSelector:
@@ -53,4 +53,4 @@ spec:
           name: orders
     ports:
     - protocol: TCP
-      port: 80
+      port: 8080
