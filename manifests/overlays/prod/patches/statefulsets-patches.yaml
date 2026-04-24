@@ -1,0 +1,140 @@
+# Documentation: https://notes.kodekloud.com/docs/Kustomize/Kustomize-Basics/Different-Types-of-Patches/page
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: carts-db
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: carts-db-temp-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+    - metadata:
+        name: carts-db-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: catalogue-db
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: catalogue-data
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: orders-db
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: orders-db-temp-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+    - metadata:
+        name: orders-db-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: rabbitmq-data
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: session-db
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: session-storage
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-db
+  namespace: sock-shop
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: users-db-temp-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+    - metadata:
+        name: users-db-vol
+      spec:
+        storageClassName: gp3
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
