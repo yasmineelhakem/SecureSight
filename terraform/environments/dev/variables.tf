@@ -79,3 +79,79 @@ variable "certificate_arn" {
   type        = string
   default     = null
 }
+
+# Database Credentials for Secrets Manager
+variable "mongodb_username" {
+  description = "MongoDB root username (set via TF_VAR_mongodb_username)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "mongodb_password" {
+  description = "MongoDB root password (set via TF_VAR_mongodb_password)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "mongodb_uri" {
+  description = "MongoDB connection URI (set via TF_VAR_mongodb_uri)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "mariadb_root_password" {
+  description = "MariaDB root password (set via TF_VAR_mariadb_root_password)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "mariadb_user" {
+  description = "MariaDB username (set via TF_VAR_mariadb_user)"
+  type        = string
+  sensitive   = true
+  default     = "root"
+}
+
+variable "mariadb_password" {
+  description = "MariaDB password (set via TF_VAR_mariadb_password)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "mariadb_database" {
+  description = "MariaDB database name"
+  type        = string
+  default     = "catalogue"
+}
+
+variable "redis_password" {
+  description = "Redis password (set via TF_VAR_redis_password)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "rabbitmq_username" {
+  description = "RabbitMQ username (set via TF_VAR_rabbitmq_username)"
+  type        = string
+  sensitive   = true
+  default     = "guest"
+}
+
+variable "rabbitmq_password" {
+  description = "RabbitMQ password (set via TF_VAR_rabbitmq_password)"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "ebs_csi_addon_version" {
+  description = "EBS CSI driver addon version"
+  type        = string
+  default     = null
+}

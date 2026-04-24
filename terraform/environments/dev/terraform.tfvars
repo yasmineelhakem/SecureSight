@@ -16,4 +16,7 @@ node_desired_size  = 2
 node_min_size      = 1
 node_max_size      = 4
 
-certificate_arn   = null 
+certificate_arn   = null
+
+# EBS CSI driver
+ebs_csi_addon_version = null  

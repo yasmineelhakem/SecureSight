@@ -13,8 +13,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-
-variable "cluster_security_group_id" {
-  description = "The security group ID of the EKS Cluster Control Plane"
-  type        = string
-}

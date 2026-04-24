@@ -1,4 +1,8 @@
-# IAM role for external secrets operator to access AWS Secrets Manager
+# Data sources
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+# External Secrets Operator IRSA Role
 
 data "aws_iam_policy_document" "external_secrets_assume_role" {
   statement {
@@ -11,7 +15,7 @@ data "aws_iam_policy_document" "external_secrets_assume_role" {
 
     condition {
       test     = "StringEquals"
-      variable = "${replace(var.oidc_provider_url, "https://", "")}:sub"
+      variable = "${var.oidc_provider_url}:sub"
 
       values = [
         "system:serviceaccount:sock-shop:external-secrets-sa"
@@ -42,7 +46,7 @@ resource "aws_iam_role_policy" "external_secrets_policy" {
         "secretsmanager:GetSecretValue",
         "secretsmanager:DescribeSecret"
       ]
-      Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:${var.environment}/*"
+      Resource = "arn:aws:secretsmanager:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:secret:${var.environment}/*"
     }]
   })
 }

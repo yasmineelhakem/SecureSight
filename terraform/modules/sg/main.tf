@@ -1,7 +1,7 @@
 # Documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
 
 resource "aws_security_group" "lb" {
-  name        = "sg-lb-${var.environment}"
+  name        = "lb-${var.environment}-sg"
   description = "Security group for Load Balancer"
   vpc_id      = var.vpc_id
 
@@ -51,7 +51,7 @@ resource "aws_vpc_security_group_egress_rule" "lb_outbound" {
 }
 
 resource "aws_security_group" "eks_nodes" {
-  name        = "sg-eks-nodes-${var.environment}"
+  name        = "eks-nodes-${var.environment}-sg"
   description = "Security group for EKS worker nodes"
   vpc_id      = var.vpc_id
 
@@ -83,34 +83,6 @@ resource "aws_vpc_security_group_ingress_rule" "nodes_self" {
 
   tags = merge(var.tags, {
     Name = "nodes-inbound-self"
-  })
-}
-
-# inbound — control plane to nodes HTTPS port 443
-resource "aws_vpc_security_group_ingress_rule" "nodes_from_cp_443" {
-  security_group_id            = aws_security_group.eks_nodes.id
-  description                  = "Allow control plane to nodes HTTPS"
-  from_port                    = 443
-  to_port                      = 443
-  ip_protocol                  = "tcp"
-  referenced_security_group_id = var.cluster_security_group_id
-
-  tags = merge(var.tags, {
-    Name = "nodes-inbound-cp-443"
-  })
-}
-
-# inbound — control plane to nodes kubelet port 10250 (for metrics, logs ...)
-resource "aws_vpc_security_group_ingress_rule" "nodes_from_cp_kubelet" {
-  security_group_id            = aws_security_group.eks_nodes.id
-  description                  = "Allow control plane to kubelet"
-  from_port                    = 10250
-  to_port                      = 10250
-  ip_protocol                  = "tcp"
-  referenced_security_group_id = var.cluster_security_group_id
-
-  tags = merge(var.tags, {
-    Name = "nodes-inbound-cp-kubelet"
   })
 }
 

@@ -27,19 +27,16 @@ module "routes" {
 }
 
 module "sg" {
-  source                     = "../../modules/sg"
-  vpc_id                     = module.vpc.vpc_id
-  environment                = var.environment
-  cluster_security_group_id  = module.eks.eks_cluster_sg_id
-  tags                       = var.tags
+  source = "../../modules/sg"
+  vpc_id = module.vpc.vpc_id
+  environment = var.environment
+  tags = var.tags
 }
 
 module "iam" {
-  source              = "../../modules/iam"
-  environment         = var.environment
-  oidc_provider_arn   = module.eks.oidc_provider_arn
-  oidc_provider_url   = module.eks.oidc_provider_url
-  tags                = var.tags
+  source      = "../../modules/iam"
+  environment = var.environment
+  tags        = var.tags
 }
 
 module "eks" {
@@ -67,4 +64,36 @@ module "lb" {
   lb_security_group_id = module.sg.lb_security_group_id
   certificate_arn      = var.certificate_arn
   tags                 = var.tags
+}
+
+module "secret_manager" {
+  source         = "../../modules/secret-manager"
+  environment    = var.environment
+  
+  mongodb_username      = var.mongodb_username
+  mongodb_password      = var.mongodb_password
+  mongodb_uri           = var.mongodb_uri
+  
+  mariadb_root_password = var.mariadb_root_password
+  mariadb_user          = var.mariadb_user
+  mariadb_password      = var.mariadb_password
+  mariadb_database      = var.mariadb_database
+  
+  redis_password        = var.redis_password
+  
+  rabbitmq_username     = var.rabbitmq_username
+  rabbitmq_password     = var.rabbitmq_password
+  
+  tags                  = var.tags
+}
+
+module "irsa" {
+  source            = "../../modules/irsa"
+  environment       = var.environment
+  cluster_name      = module.eks.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = replace(module.eks.oidc_provider_url, "https://", "")
+  tags              = var.tags
+
+  depends_on = [module.eks]
 }
