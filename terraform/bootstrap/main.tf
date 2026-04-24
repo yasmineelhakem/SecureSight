@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "s3-bucket-securesight"
+  bucket = "s3-bucket-securesight-yasmine"
 
   tags = {
     Name        = "Terraform State Bucket"
