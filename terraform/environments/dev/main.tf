@@ -83,17 +83,14 @@ module "irsa" {
   depends_on = [module.eks]
 }
 
-module "ebs_csi_driver" {
+module "ebs-csi-driver" {
   source = "../../modules/ebs-csi-driver"
 
-  cluster_name    = module.eks.cluster_name
-  cluster_version = var.kubernetes_version
-  addon_version   = null
-
+  cluster_name = module.eks.cluster_name
+  addon_version = var.ebs_csi_addon_version
+  ebs_csi_role_arn = module.irsa.ebs_csi_driver_role_arn
   tags = var.tags
 
-  depends_on = [
-    module.eks,
-    module.irsa
-  ]
+  depends_on = [module.irsa]
+
 }

@@ -3,11 +3,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_version" {
-  description = "EKS cluster version"
-  type        = string
-}
-
 variable "addon_version" {
   description = "EBS CSI driver addon version"
   type        = string
@@ -18,4 +13,9 @@ variable "tags" {
   description = "Common tags"
   type        = map(string)
   default     = {}
+}
+
+variable "ebs_csi_role_arn" {
+  description = "IAM role ARN for EBS CSI Driver (for IRSA)"
+  type = string
 }

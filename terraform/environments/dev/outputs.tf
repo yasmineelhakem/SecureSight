@@ -96,10 +96,10 @@ output "ebs_csi_iam_role_arn" {
   value       = module.irsa.ebs_csi_driver_role_arn
 }
 
-# kubectl Configuration Command
-output "kubectl_config_command" {
-  description = "Command to configure kubectl"
-  value       = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region us-east-2 --profile DevOpsTeam-014498640042"
+
+output "ebs_csi_addon_id" {
+  description = "EBS CSI Driver Addon ID"
+  value       = module.ebs-csi-driver.addon_id
 }
 
 output "deployment_summary" {
@@ -112,14 +112,4 @@ output "deployment_summary" {
     node_count     = var.node_desired_size
     vpc_cidr       = var.vpc_cidr
   }
-}
-
-output "ebs_csi_driver_role_arn" {
-  description = "IAM role ARN for EBS CSI Driver"
-  value       = module.ebs-csi-driver.iam_role_arn
-}
-
-output "ebs_csi_addon_id" {
-  description = "EBS CSI Driver Addon ID"
-  value       = module.ebs-csi-driver.addon_id
 }

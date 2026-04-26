@@ -19,4 +19,4 @@ node_max_size      = 4
 certificate_arn   = null
 
 # EBS CSI driver
-ebs_csi_addon_version = null  
+ebs_csi_addon_version = null
