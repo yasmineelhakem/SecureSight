@@ -72,22 +72,22 @@ output "external_secrets_role_arn" {
 # Secrets Manager Outputs
 output "carts_db_secret_arn" {
   description = "Carts DB secret ARN"
-  value       = module.secret_manager.carts_db_secret_arn
+  value       = module.secrets-manager.carts_db_secret_arn
 }
 
 output "catalogue_db_secret_arn" {
   description = "Catalogue DB secret ARN"
-  value       = module.secret_manager.catalogue_db_secret_arn
+  value       = module.secrets-manager.catalogue_db_secret_arn
 }
 
 output "session_db_secret_arn" {
   description = "Session DB secret ARN"
-  value       = module.secret_manager.session_db_secret_arn
+  value       = module.secrets-manager.session_db_secret_arn
 }
 
 output "rabbitmq_secret_arn" {
   description = "RabbitMQ secret ARN"
-  value       = module.secret_manager.rabbitmq_secret_arn
+  value       = module.secrets-manager.rabbitmq_secret_arn
 }
 
 # EBS CSI Driver Outputs
@@ -112,4 +112,14 @@ output "deployment_summary" {
     node_count     = var.node_desired_size
     vpc_cidr       = var.vpc_cidr
   }
+}
+
+output "ebs_csi_driver_role_arn" {
+  description = "IAM role ARN for EBS CSI Driver"
+  value       = module.ebs-csi-driver.iam_role_arn
+}
+
+output "ebs_csi_addon_id" {
+  description = "EBS CSI Driver Addon ID"
+  value       = module.ebs-csi-driver.addon_id
 }

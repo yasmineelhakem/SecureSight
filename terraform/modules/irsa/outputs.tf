@@ -17,5 +17,3 @@ output "ebs_csi_driver_role_name" {
   description = "Name of EBS CSI Driver IAM role"
   value       = aws_iam_role.ebs_csi_driver.name
 }
-
-

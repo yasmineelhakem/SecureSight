@@ -66,24 +66,9 @@ module "lb" {
   tags                 = var.tags
 }
 
-module "secret_manager" {
-  source         = "../../modules/secret-manager"
+module "secrets-manager" {
+  source         = "../../modules/secrets-manager"
   environment    = var.environment
-  
-  mongodb_username      = var.mongodb_username
-  mongodb_password      = var.mongodb_password
-  mongodb_uri           = var.mongodb_uri
-  
-  mariadb_root_password = var.mariadb_root_password
-  mariadb_user          = var.mariadb_user
-  mariadb_password      = var.mariadb_password
-  mariadb_database      = var.mariadb_database
-  
-  redis_password        = var.redis_password
-  
-  rabbitmq_username     = var.rabbitmq_username
-  rabbitmq_password     = var.rabbitmq_password
-  
   tags                  = var.tags
 }
 
@@ -96,4 +81,19 @@ module "irsa" {
   tags              = var.tags
 
   depends_on = [module.eks]
+}
+
+module "ebs_csi_driver" {
+  source = "../../modules/ebs-csi-driver"
+
+  cluster_name    = module.eks.cluster_name
+  cluster_version = var.kubernetes_version
+  addon_version   = null
+
+  tags = var.tags
+
+  depends_on = [
+    module.eks,
+    module.irsa
+  ]
 }
