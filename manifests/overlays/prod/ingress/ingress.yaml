@@ -6,12 +6,17 @@ kind: Ingress
 metadata:
   name: securesight-ingress
   namespace: sock-shop
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+
 spec:
   # this matches the name of IngressClass.
   ingressClassName: alb
   rules:
-    - host: securesight.com
-      http:
+    #- host: securesight.com
+    - http:
         paths:
         # default frontend path
           - path: /
