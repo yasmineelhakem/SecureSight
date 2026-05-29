@@ -4,17 +4,6 @@
 
 This directory contains Infrastructure as Code (IaC) for provisioning and managing AWS infrastructure for SecureSight. The infrastructure is built around **Amazon EKS (Elastic Kubernetes Service)** and includes complete networking, security, identity, and storage components.
 
-### Architecture Highlights
-
-- **Managed Kubernetes Cluster**: EKS cluster for container orchestration
-- **Highly Available Networking**: Multi-AZ VPC with public and private subnets
-- **Security-First Design**: Network policies, security groups, and IAM roles
-- **Scalable Compute**: Auto-scaling node groups across availability zones
-- **State Management**: Remote S3 backend with encryption and versioning
-- **Secrets Management**: AWS Secrets Manager integration with external-secrets operator
-
-
-
 ## Remote State
 
 The bootstrap step creates an S3 bucket to store the Terraform state file remotely, ensuring team collaboration and state consistency.
@@ -33,67 +22,246 @@ terraform apply
 - Public access blocking for security
 
 
-## Module Descriptions
+## Terraform Infrastructure Modules
 
-### VPC Module
-Creates the Virtual Private Cloud with:
-- Single VPC with configurable CIDR block
-- Internet and NAT gateways for connectivity
-- DNS hostnames enabled
+## 1. VPC Module
 
-**Key Inputs:**
-- `vpc_cidr`: CIDR block for VPC (default: `10.0.0.0/16`)
-- `environment`: Environment name (dev/prod)
+Creates the main AWS VPC and attaches an Internet Gateway for public internet access.
 
-### Subnets Module
-Manages subnet creation across multiple availability zones:
-- Public subnets for load balancers and NAT gateways
-- Private subnets for EKS nodes and applications
-- Automatic tagging for Kubernetes service discovery
+### Resources Created
+- AWS VPC
+- Internet Gateway (IGW)
 
-**Key Inputs:**
-- `availability_zones`: List of AZs for multi-AZ setup
-- `public_subnet_cidrs`: CIDR blocks for public subnets
-- `private_subnet_cidrs`: CIDR blocks for private subnets
+### Features
+- Configurable CIDR block
+- DNS support and DNS hostname configuration
+- Environment-based naming convention
+- Custom tagging support
+- Internet connectivity through IGW
 
-### Routes Module
-Configures routing for network traffic:
-- Routes from public subnets to Internet Gateway
-- Routes from private subnets through NAT Gateway
-- Enables secure outbound connectivity for private resources
 
-### Security Groups Module
-Creates network-level security controls:
-- Node security group for EKS node communication
-- Cluster security group for control plane
-- Rules for pod-to-pod and ingress traffic
+## 2. Subnets Module
 
-### IAM Module
-Manages identity and access control:
-- EKS cluster role for control plane
-- Node group role for worker nodes
-- Service-specific roles for add-ons
+Creates public and private subnets across multiple Availability Zones and provisions a NAT Gateway for outbound internet access from private subnets.
 
-### IRSA Module (IAM Roles for Service Accounts)
-Provides fine-grained IAM permissions to Kubernetes service accounts:
-- EBS CSI driver role for volume management
-- External Secrets Operator role for secrets access
-- Follows least-privilege security principle
+### Resources Created
+- Public Subnets
+- Private Subnets
+- Elastic IP (EIP)
+- NAT Gateway
 
-### EBS CSI Driver Module
-Manages EBS volumes for Kubernetes persistent storage:
-- Enables dynamic provisioning of EBS volumes
-- Automatic attachment/detachment of volumes to pods
+### Features
+- Multi-AZ subnet deployment
+- Automatic public IP assignment for public subnets
+- Kubernetes-compatible subnet tagging
+- NAT Gateway for outbound internet access from private subnets
+- Environment and custom tagging support
 
-### Load Balancer Module
-Configures AWS Load Balancing for Kubernetes:
-- Integration with Kubernetes service type `LoadBalancer`
+### Kubernetes Integration
+The module adds subnet tags required by Amazon EKS:
+- Public subnets for external Load Balancers (`kubernetes.io/role/elb`)
+- Private subnets for internal Load Balancers (`kubernetes.io/role/internal-elb`)
 
-### Secrets Manager Module
-Integrates AWS Secrets Manager with Kubernetes:
-- Stores sensitive data outside of etcd
-- Used by External Secrets Operator for automatic secret syncing
+## 3. Routes Module
 
+Creates route tables and associates them with public and private subnets.
+
+### Resources Created
+- Public Route Table
+- Private Route Table
+- Internet Route
+- NAT Gateway Route
+- Route Table Associations
+
+### Features
+- Public subnet routing through the Internet Gateway
+- Private subnet routing through the NAT Gateway
+- Automatic subnet-to-route-table associations
+- Separation between public and private traffic
+
+### Traffic Flow
+- Public Subnets → Internet Gateway → Internet
+- Private Subnets → NAT Gateway → Internet
+
+
+## 4. Security Groups Module
+
+Creates security groups for the Application Load Balancer and EKS worker nodes.
+
+### Resources Created
+- Load Balancer Security Group
+- EKS Nodes Security Group
+- Ingress and Egress Rules
+
+### Features
+#### Load Balancer Security Group
+- Allows inbound HTTP traffic on port 80
+- Allows inbound HTTPS traffic on port 443
+- Allows outbound traffic to EKS nodes
+
+#### EKS Nodes Security Group
+- Allows inbound traffic from the Load Balancer
+- Allows node-to-node communication
+- Allows outbound internet access
+
+### Purpose
+Provides secure communication between:
+- Internet users
+- Application Load Balancer
+- EKS worker nodes
+
+
+## 5. IAM Module
+
+Creates IAM roles and policy attachments required for the EKS cluster and worker nodes.
+
+### EKS Cluster IAM Role
+
+### Resources Created
+- EKS Cluster IAM Role
+- AmazonEKSClusterPolicy attachment
+
+### Features
+- Allows Amazon EKS control plane management
+- Grants required permissions for cluster operations
+
+
+### EKS Node IAM Role
+
+#### Resources Created
+- EKS Worker Node IAM Role
+- AmazonEKSWorkerNodePolicy attachment
+- AmazonEC2ContainerRegistryReadOnly attachment
+- AmazonEKS_CNI_Policy attachment
+
+#### Features
+- Allows worker nodes to join the cluster
+- Grants permissions to pull images from Amazon ECR
+- Enables Kubernetes networking through the EKS CNI plugin
+
+
+## 6. EKS Module
+
+Creates the Amazon EKS cluster, managed node group, and OIDC provider.
+
+### Resources Created
+- EKS Cluster
+- Managed Node Group
+- IAM OIDC Provider
+
+### Features
+- Deploys Kubernetes control plane
+- Creates managed worker nodes in private subnets
+- Configurable Kubernetes version
+- Configurable node scaling settings
+- OIDC provider support for IRSA
+- Multi-subnet cluster networking
+
+### Node Group Configuration
+- Managed node groups
+- Configurable instance types
+- Auto scaling support
+- Rolling update configuration
+- Worker nodes deployed in private subnets
+
+### OIDC Integration
+Creates an IAM OpenID Connect provider used for IAM Roles for Service Accounts (IRSA).
+
+## 7. IRSA Module
+
+Creates IAM Roles for Service Accounts (IRSA) used by Kubernetes controllers and operators.
+
+
+### EBS CSI Driver IRSA
+
+Creates an IAM role for the Amazon EBS CSI Driver.
+
+#### Resources Created
+- IAM Role for EBS CSI Driver
+- AmazonEBSCSIDriverPolicy attachment
+
+#### Features
+- Allows Kubernetes to dynamically provision EBS volumes
+- Uses IAM Roles for Service Accounts (IRSA)
+- Restricts access to the EBS CSI controller service account
+
+#### Kubernetes Service Account
+- `kube-system/ebs-csi-controller-sa`
+
+
+### External Secrets IRSA
+
+Creates an IAM role and policy for the External Secrets Operator.
+
+### Resources Created
+- IAM Role for External Secrets
+- Custom IAM Policy for AWS Secrets Manager access
+
+### Features
+- Allows Kubernetes applications to retrieve secrets from AWS Secrets Manager
+- Uses IAM Roles for Service Accounts (IRSA)
+- Restricts access to environment-specific secrets
+
+### Permissions
+- `secretsmanager:GetSecretValue`
+- `secretsmanager:DescribeSecret`
+
+### Kubernetes Service Account
+- `sock-shop/external-secrets-sa`
+
+
+## 8. Load Balancer Module
+
+Creates an Application Load Balancer (ALB), target group, and listeners.
+
+### Resources Created
+- Application Load Balancer (ALB)
+- Target Group
+- HTTP Listener
+- HTTPS Listener
+
+### Features
+- Internet-facing Application Load Balancer
+- Environment-specific listener configuration
+- HTTP to HTTPS redirection in production
+- TLS termination support
+- Target group forwarding to Kubernetes services
+
+### Environment Behavior
+
+#### Development
+- HTTP listener enabled
+
+#### Production
+- HTTP listener redirects to HTTPS
+- HTTPS listener enabled using ACM certificate
+- Deletion protection enabled
+
+
+## 9. Secrets Manager Module
+
+Creates AWS Secrets Manager secrets for application services.
+
+### Resources Created
+- MongoDB Secret
+- MariaDB Secret
+- Redis Secret
+- RabbitMQ Secret
+
+### Features
+- Centralized secret management
+- Environment-specific secret naming
+- Secret version management
+- Secure integration with External Secrets Operator
+
+### Managed Secrets
+
+- Carts Service : MongoDB credentials
+- Catalogue Service : MariaDB credentials
+- Session Service : Redis password
+- RabbitMQ : Broker credentials
+
+<hr>
 
 ## Environments: Dev vs Prod
 
@@ -210,7 +378,7 @@ Pushing dev/rabbitmq... ✅
 All secrets pushed successfully for 'dev'
 ```
 
-### Verify Secrets in AWS
+#### Step 4: Verify Secrets in AWS
 
 ```bash
 # List all stored secrets
