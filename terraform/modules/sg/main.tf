@@ -86,7 +86,7 @@ resource "aws_vpc_security_group_ingress_rule" "nodes_self" {
   })
 }
 
-# ountbound — allow all outbound from nodes 
+# outbound: allow all outbound from nodes 
 resource "aws_vpc_security_group_egress_rule" "nodes_outbound" {
   security_group_id = aws_security_group.eks_nodes.id
   description       = "Allow all outbound from nodes"
