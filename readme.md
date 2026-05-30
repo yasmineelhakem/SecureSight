@@ -1,58 +1,63 @@
-# From Demo to Production: Improving Kubernetes Manifests in the Sock Shop Microservices Application
+# SecureSight: Production-Grade Kubernetes on AWS EKS
 
-> 📖 Full write-up on Medium: [From Demo to Production](https://medium.com/@yasmineelhakem8/from-demo-to-production-improving-kubernetes-manifests-in-the-sock-shop-microservices-application-d23f92a49f7e)
-
-## Overview
-
-This project takes the [Sock Shop](https://github.com/ocp-power-demos/sock-shop-demo) — a cloud-native demo application showcasing a distributed microservices architecture on Kubernetes — and progressively hardens it for real-world deployment on **AWS (EKS)**.
-
-The manifests are organized with **Kustomize**, using a shared base and two environment-specific overlays:
-- **Dev overlay** — validated locally on Minikube
-- **Prod overlay** — designed for AWS EKS deployment
+> Taking the Sock Shop microservices demo and hardening it for real-world deployment on AWS EKS
+> with production-ready Kubernetes manifests, cloud infrastructure as code, and runtime security.
 
 ---
 
-## Improvements Applied
+## What This Project Is
 
-### Dev Overlay
+[Sock Shop](https://github.com/ocp-power-demos/sock-shop-demo) is a well-known cloud-native demo application built around a distributed microservices architecture. It is intentionally simple: great for learning, not ready for production.
 
-| Step | Improvement |
-|------|-------------|
-| **1. ConfigMaps & Secrets** | Extracted hardcoded env vars (DB hostnames, ports, credentials) from Deployment specs into dedicated `ConfigMap` and `Secret` resources |
-| **2. Deployments → StatefulSets** | Migrated all database workloads (`orders-db`, `catalogue-db`, `carts-db`, `user-db`, `session-db`, `rabbitmq`) to `StatefulSets` for stable pod identity, stable DNS, and per-pod storage |
-| **3. Persistent Volumes** | Replaced `emptyDir` volumes with `PersistentVolumeClaims` to ensure data survives pod restarts |
-| **4. Horizontal Pod Autoscaler (HPA)** | Added HPAs for all stateless services, tuned per service (CPU-bound, memory-bound, or lightweight) with proper resource requests |
-| **5. Network Policies** | Implemented a default-deny strategy (ingress + egress), with explicit allowlists per service — limiting blast radius in case of compromise |
-| **6. RBAC** | Assigned dedicated `ServiceAccounts`, `Roles`, and `RoleBindings` to each microservice, following the principle of least privilege |
+This project takes that foundation and progressively hardens it across three areas:
 
-### Prod Overlay
+- **Infrastructure**: AWS EKS cluster provisioned with Terraform (VPC, networking, security, IAM, secrets)
+- **Kubernetes Manifests**: production improvements applied with Kustomize (stateful workloads, autoscaling, security policies, secrets management, ingress)
+- **Runtime Security**: Tetragon policies for eBPF-based threat detection and enforcement
 
-| Step | Improvement |
-|------|-------------|
-| **1. AWS EBS Storage (gp3)** | Defined a `StorageClass` using the AWS EBS CSI driver for dynamic volume provisioning |
-| **2. StatefulSet Storage Patches** | Patched all database StatefulSets to use the `gp3` StorageClass via Kustomize patches |
-| **3. External Secrets** | Integrated **External Secrets Operator** to pull sensitive credentials from **AWS Secrets Manager** via IRSA, replacing plain Kubernetes Secrets |
-| **4. AWS ALB Ingress** | Configured path-based routing through an **AWS Application Load Balancer**, replacing NodePort exposure with a single secure public endpoint |
 
----
+## Infrastructure
 
-## Deployment (EKS)
+The cloud infrastructure is provisioned with Terraform on AWS EKS in `us-east-2`. It follows a security-first, cost-efficient design: all workloads run in private subnets, only the load balancer is public-facing, and credentials never appear in code or state.
 
-```bash
-# Connect to the EKS cluster
-aws eks update-kubeconfig --region us-east-2 --name eks-dev
+For the full infrastructure breakdown, modules, architecture diagram, deployment guide, and secrets management see the **[Terraform README](./terraform/README.md)**.
 
-# Apply the production overlay
-kubectl apply -k manifests/overlays/prod
-```
 
-**Prerequisites installed via Helm/official guides:**
-- AWS Load Balancer Controller
-- External Secrets Operator
-- Metrics Server
+## Kubernetes Manifests
 
+Manifests are structured with **Kustomize** using a shared base and two environment overlays.
+
+### Dev Overlay: validated on Minikube
+
+| Improvement | What Was Done |
+|---|---|
+| ConfigMaps & Secrets | Extracted hardcoded env vars from Deployment specs into dedicated resources |
+| StatefulSets | Migrated all database workloads from Deployments for stable identity and per-pod storage |
+| Persistent Volumes | Replaced `emptyDir` with PersistentVolumeClaims so data survives pod restarts |
+| Horizontal Pod Autoscaler | Added HPAs for all stateless services, tuned per workload type |
+| Network Policies | Default-deny strategy with explicit allowlists per service. |
+| RBAC | Dedicated ServiceAccounts, Roles, and RoleBindings per microservice, least privilege |
+
+### Prod Overlay: deployed on AWS EKS
+
+| Improvement | What Was Done |
+|---|---|
+| EBS Storage (gp3) | StorageClass using AWS EBS CSI driver for dynamic volume provisioning |
+| StatefulSet Patches | All database StatefulSets patched to use the `gp3` StorageClass via Kustomize |
+| External Secrets | External Secrets Operator pulls credentials from AWS Secrets Manager via IRSA, replaces plain Kubernetes Secrets |
+| AWS ALB Ingress | Path-based routing through an Application Load Balancer, single secure public endpoint replacing NodePort |
+
+For the full write-up on every decision and implementation detail, read the **[Medium article](https://medium.com/@yasmineelhakem8/from-demo-to-production-improving-kubernetes-manifests-in-the-sock-shop-microservices-application-d23f92a49f7e)**.
+
+
+## Runtime Security
+
+Tetragon policies provide eBPF-based threat detection and enforcement at the kernel level, catching malicious behavior that Kubernetes-layer controls cannot see.
+
+For the full Tetragon setup and policy explanations, see the **[Tetragon README](./tetragon/readme.md)** or  **full article:** [Runtime Security on Kubernetes with Tetragon & eBPF](https://medium.com/@yasmineelhakem8/runtime-security-on-kubernetes-with-tetragon-ebpf-aad6dde34a43)
+ 
 ---
 
 ## Tech Stack
 
-`Kubernetes` · `Kustomize` · `AWS EKS` · `AWS EBS (gp3)` · `AWS ALB` · `AWS Secrets Manager` · `External Secrets Operator` · `Terraform` · `Minikube`
+`Kubernetes` · `Kustomize` · `AWS EKS` · `AWS EBS (gp3)` · `AWS ALB` · `AWS Secrets Manager` · `External Secrets Operator` · `Terraform` · `Tetragon` · `Minikube`
